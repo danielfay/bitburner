@@ -7,6 +7,7 @@ export async function main(ns: NS): Promise<void> {
   const target = (ns.args[3] as string) ?? "joesguns";
   const newRam = 2 ** ramExponent;
   const baseServerName = "pserv-";
+  let remainingMoney = ns.getServerMoneyAvailable("home");
   let serverNum = 0;
   let upgradedServers = 0;
   let totalUpgradeCost = 0;
@@ -15,8 +16,12 @@ export async function main(ns: NS): Promise<void> {
     const serverName = baseServerName + serverNum;
     if (method === "check") {
       const upgradeCost = ns.getPurchasedServerUpgradeCost(serverName, newRam);
-      if (upgradeCost > 0) {
+      remainingMoney = remainingMoney - upgradeCost;
+      if (upgradeCost > 0 && remainingMoney > 0) {
         totalUpgradeCost = totalUpgradeCost + upgradeCost;
+        upgradedServers = upgradedServers + 1;
+      } else {
+        break;
       }
     } else if (method === "buy") {
       const upgradeStatus = ns.upgradePurchasedServer(serverName, newRam);
@@ -27,11 +32,15 @@ export async function main(ns: NS): Promise<void> {
     serverNum = serverNum + 1;
   }
   if (method === "check") {
-    ns.tprint("Total cost: " + ns.formatNumber(totalUpgradeCost));
+    ns.tprint(
+      `Can upgrade ${upgradedServers} servers for a total cost of ${ns.formatNumber(
+        totalUpgradeCost
+      )}.`
+    );
   } else if (method === "buy") {
-    ns.tprint("Upgraded servers: " + upgradedServers);
+    ns.tprint(`Upgraded ${upgradedServers} servers.`);
     if (upgradedServers) {
-      ns.spawn("deploy-basic-script.js", 1, script, target);
+      ns.run("deploy-basic-script.js", 1, script, target, "purchased");
     }
   }
 }

@@ -1,58 +1,24 @@
 import { NS } from "@ns";
+import {
+  findAllServers,
+  findHackableServers,
+  findPurchasedServers,
+} from "lib/networking";
 
 export async function main(ns: NS): Promise<void> {
   const script = ns.args[0] as string;
   const target = ns.args[1] as string;
-  const servers = [
-    "avmnite-02h",
-    "catalyst",
-    "CSEC",
-    "foodnstuff",
-    "harakiri-sushi",
-    "hong-fang-tea",
-    "I.I.I.I",
-    "iron-gym",
-    "joesguns",
-    "max-hardware",
-    "n00dles",
-    "nectar-net",
-    "neo-net",
-    "netlink",
-    "omega-net",
-    "phantasy",
-    "pserv-0",
-    "pserv-1",
-    "pserv-2",
-    "pserv-3",
-    "pserv-4",
-    "pserv-5",
-    "pserv-6",
-    "pserv-7",
-    "pserv-8",
-    "pserv-9",
-    "pserv-10",
-    "pserv-11",
-    "pserv-12",
-    "pserv-13",
-    "pserv-14",
-    "pserv-15",
-    "pserv-16",
-    "pserv-17",
-    "pserv-18",
-    "pserv-19",
-    "pserv-20",
-    "pserv-21",
-    "pserv-22",
-    "pserv-23",
-    "pserv-24",
-    "rothman-uni",
-    "sigma-cosmetics",
-    "silver-helix",
-    "summit-uni",
-    "the-hub",
-    "zer0",
-  ];
+  const serverType = (ns.args[2] as string) || "all";
   let updatedServers = 0;
+
+  let servers: string[] = [];
+  if (serverType === "all") {
+    servers = findAllServers(ns);
+  } else if (serverType === "hackable") {
+    servers = findHackableServers(ns);
+  } else if (serverType === "purchased") {
+    servers = findPurchasedServers(ns);
+  }
 
   for (const server of servers) {
     const exists = ns.serverExists(server);
@@ -70,9 +36,7 @@ export async function main(ns: NS): Promise<void> {
     updatedServers = updatedServers + 1;
   }
 
-  ns.tprint(
-    "Updated " + updatedServers + " servers. " + script + " deployment done."
-  );
+  ns.tprint(`Updated ${updatedServers} servers. ${script} deployment done.`);
 }
 
 function nukeServer(ns: NS, server: string) {
