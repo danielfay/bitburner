@@ -3,6 +3,8 @@ import { NS } from "@ns";
 export async function main(ns: NS): Promise<void> {
     const method = ns.args[0] as string;
     const ramExponent = ns.args[1] as number;
+    const script = ns.args[2] as string ?? 'basic-money.js';
+    const target = ns.args[3] as string ?? 'joesguns';
     const newRam = 2 ** ramExponent;
     const baseServerName = 'pserv-';
     let serverNum = 0;
@@ -29,7 +31,7 @@ export async function main(ns: NS): Promise<void> {
     } else if (method === 'buy') {
         ns.tprint("Upgraded servers: " + upgradedServers);
         if (upgradedServers) {
-            ns.spawn('deploy-basic-script.js', 1, 'basic-money.js', 'joesguns');
+            ns.spawn('deploy-basic-script.js', 1, script, target);
         }
     }
 }
