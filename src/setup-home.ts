@@ -5,7 +5,7 @@ export async function main(ns: NS): Promise<void> {
   const target = (ns.args[1] as string) ?? "joesguns";
   const homeRam = ns.getServerMaxRam("home");
   const scriptRam = ns.getScriptRam(script);
-  const threads = (homeRam - 20) / scriptRam;
+  const threads = Math.floor((homeRam - 20) / scriptRam);
 
   ns.killall("home");
   ns.run(script, threads, target);

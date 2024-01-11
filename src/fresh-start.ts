@@ -5,7 +5,7 @@ export async function main(ns: NS): Promise<void> {
   const target = "n00dles";
   const homeRam = ns.getServerMaxRam("home");
   const scriptRam = ns.getScriptRam(script);
-  const threads = (homeRam - 20) / scriptRam;
+  const threads = Math.floor((homeRam - 20) / scriptRam);
 
   ns.nuke(target);
   ns.run(script, threads, target);
