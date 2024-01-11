@@ -20,8 +20,6 @@ export async function main(ns: NS): Promise<void> {
       if (upgradeCost > 0 && remainingMoney > 0) {
         totalUpgradeCost = totalUpgradeCost + upgradeCost;
         upgradedServers = upgradedServers + 1;
-      } else {
-        break;
       }
     } else if (method === "buy") {
       const upgradeStatus = ns.upgradePurchasedServer(serverName, newRam);
