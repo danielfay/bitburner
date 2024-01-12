@@ -1,62 +1,42 @@
-import { NS } from "@ns";
+import { NS, Server } from "@ns";
 
 export function findPurchasedServers(ns: NS) {
-  return [
-    "pserv-0",
-    "pserv-1",
-    "pserv-2",
-    "pserv-3",
-    "pserv-4",
-    "pserv-5",
-    "pserv-6",
-    "pserv-7",
-    "pserv-8",
-    "pserv-9",
-    "pserv-10",
-    "pserv-11",
-    "pserv-12",
-    "pserv-13",
-    "pserv-14",
-    "pserv-15",
-    "pserv-16",
-    "pserv-17",
-    "pserv-18",
-    "pserv-19",
-    "pserv-20",
-    "pserv-21",
-    "pserv-22",
-    "pserv-23",
-    "pserv-24",
-  ];
+  let networkMap: Server[] = JSON.parse(ns.read("network_map.txt"));
+  let purchasedServers = networkMap.filter((server) =>
+    server.hostname.startsWith("pserv-")
+  );
+  return purchasedServers.map((server) => server.hostname);
 }
 
 export function findHackableServers(ns: NS) {
-  return [
-    "avmnite-02h",
-    "catalyst",
-    "CSEC",
-    "foodnstuff",
-    "harakiri-sushi",
-    "hong-fang-tea",
-    "I.I.I.I",
-    "iron-gym",
-    "joesguns",
-    "max-hardware",
-    "n00dles",
-    "nectar-net",
-    "neo-net",
-    "netlink",
-    "omega-net",
-    "phantasy",
-    "rothman-uni",
-    "sigma-cosmetics",
-    "silver-helix",
-    "summit-uni",
-    "the-hub",
-    "zer0",
-  ];
+  let networkMap: Server[] = JSON.parse(ns.read("network_map.txt"));
+  let hackableServers = networkMap.filter(
+    (server) => !server.hostname.startsWith("pserv-")
+  );
+  return hackableServers.map((server) => server.hostname);
 }
 
 export function findAllServers(ns: NS) {
-  return findHackableServers(ns).concat(findPurchasedServers(ns));
+  let networkMap: Server[] = JSON.parse(ns.read("network_map.txt"));
+  return networkMap.map((server) => server.hostname);
+}
+
+export function createNetworkMapJSON(ns: NS) {
+  const fileName = "network_map.txt";
+  let networdMap: Server[] = [];
+  let hostnamesToVisit = ["home"];
+
+  while (hostnamesToVisit.length > 0) {
+    let hostname = hostnamesToVisit.shift();
+
+    let seenHostname =
+      networdMap.filter((server) => server.hostname === hostname).length > 0;
+    if (!seenHostname) {
+      networdMap.push(ns.getServer(hostname));
+      hostnamesToVisit = hostnamesToVisit.concat(ns.scan(hostname));
+    }
+  }
+
+  networdMap.shift();
+  ns.write(fileName, JSON.stringify(networdMap), "w");
 }
