@@ -1,5 +1,18 @@
 import { NS, Server } from "@ns";
 
+export function findRouteToServer(ns: NS, hostname: string) {
+  let routeToServer: string[] = [];
+
+  while (hostname !== "home") {
+    const connectedServers = ns.scan(hostname);
+    routeToServer.push(hostname);
+    hostname = connectedServers[0];
+  }
+  routeToServer.push("home");
+
+  return routeToServer.reverse();
+}
+
 export function findPurchasedHostnames(ns: NS) {
   let hostnames = findAllHostnames(ns);
   let purchasedHostnames = hostnames.filter((hostname) =>
