@@ -1,5 +1,6 @@
 import { NS } from "@ns";
 import { nukeServer } from "lib/access";
+import { getThreadsForScript } from "lib/memory";
 import {
   findAllHostnames,
   findHackableHostnames,
@@ -38,18 +39,6 @@ export async function main(ns: NS): Promise<void> {
   }
 
   ns.tprint(`Updated ${updatedServers} servers. ${script} deployment done.`);
-}
-
-function getThreadsForScript(ns: NS, script: string, hostname: string) {
-  const scriptRam = ns.getScriptRam(script, "home");
-  const serverRam = ns.getServerMaxRam(hostname);
-
-  let threads = 0;
-  if (serverRam > 0) {
-    threads = Math.floor(serverRam / scriptRam);
-  }
-
-  return threads;
 }
 
 async function deployScript(

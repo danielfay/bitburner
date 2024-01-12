@@ -4,7 +4,7 @@ export async function main(ns: NS): Promise<void> {
   const method = ns.args[0] as string;
   const ramExponent = ns.args[1] as number;
   const script = (ns.args[2] as string) ?? "basic-money.js";
-  const target = (ns.args[3] as string) ?? "joesguns";
+  const target = (ns.args[3] as string) ?? "n00dles";
   const newRam = 2 ** ramExponent;
   const baseServerName = "pserv-";
   let remainingMoney = ns.getServerMoneyAvailable("home");

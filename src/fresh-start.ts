@@ -1,14 +1,13 @@
 import { NS } from "@ns";
-import { createNetworkMapJSON } from "lib/networking";
+import { getThreadsForScript } from "lib/memory";
+import { nukeServer } from "lib/access";
 
 export async function main(ns: NS): Promise<void> {
   const script = "basic-money.js";
   const target = "n00dles";
-  const homeRam = ns.getServerMaxRam("home");
-  const scriptRam = ns.getScriptRam(script);
-  const threads = Math.floor((homeRam - 20) / scriptRam);
+  const threads = getThreadsForScript(ns, script, "home", 20);
 
-  ns.nuke(target);
+  nukeServer(ns, target);
   ns.run(script, threads, target);
   ns.run("deploy-basic-script.js", 1, script, target, "hackable");
   ns.run("buy-initial-pservs.js", 1, script, target);
