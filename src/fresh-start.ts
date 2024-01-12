@@ -10,7 +10,6 @@ export async function main(ns: NS): Promise<void> {
 
   ns.nuke(target);
   ns.run(script, threads, target);
-  createNetworkMapJSON(ns);
   ns.run("deploy-basic-script.js", 1, script, target, "hackable");
   ns.run("buy-initial-pservs.js", 1, script, target);
 }

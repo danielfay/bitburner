@@ -1,8 +1,8 @@
 import { NS } from "@ns";
 import {
-  findAllServers,
-  findHackableServers,
-  findPurchasedServers,
+  findAllHostnames,
+  findHackableHostnames,
+  findPurchasedHostnames,
 } from "lib/networking";
 
 export async function main(ns: NS): Promise<void> {
@@ -11,52 +11,52 @@ export async function main(ns: NS): Promise<void> {
   const serverType = (ns.args[2] as string) || "all";
   let updatedServers = 0;
 
-  let servers: string[] = [];
+  let hostnames: string[] = [];
   if (serverType === "all") {
-    servers = findAllServers(ns);
+    hostnames = findAllHostnames(ns);
   } else if (serverType === "hackable") {
-    servers = findHackableServers(ns);
+    hostnames = findHackableHostnames(ns);
   } else if (serverType === "purchased") {
-    servers = findPurchasedServers(ns);
+    hostnames = findPurchasedHostnames(ns);
   }
 
-  for (const server of servers) {
-    const exists = ns.serverExists(server);
+  for (const hostname of hostnames) {
+    const exists = ns.serverExists(hostname);
     if (!exists) {
       continue;
     }
 
-    const nuked = nukeServer(ns, server);
-    const threads = getThreadsForScript(ns, script, server);
+    const nuked = nukeServer(ns, hostname);
+    const threads = getThreadsForScript(ns, script, hostname);
     if (!nuked || !threads) {
       continue;
     }
 
-    await deployScript(ns, script, server, threads, target);
+    await deployScript(ns, script, hostname, threads, target);
     updatedServers = updatedServers + 1;
   }
 
   ns.tprint(`Updated ${updatedServers} servers. ${script} deployment done.`);
 }
 
-function nukeServer(ns: NS, server: string) {
+function nukeServer(ns: NS, hostname: string) {
   try {
     if (ns.fileExists("BruteSSH.exe", "home")) {
-      ns.brutessh(server);
+      ns.brutessh(hostname);
     }
     if (ns.fileExists("FTPCrack.exe", "home")) {
-      ns.ftpcrack(server);
+      ns.ftpcrack(hostname);
     }
     if (ns.fileExists("relaySMTP.exe", "home")) {
-      ns.relaysmtp(server);
+      ns.relaysmtp(hostname);
     }
     if (ns.fileExists("HTTPWorm.exe", "home")) {
-      ns.httpworm(server);
+      ns.httpworm(hostname);
     }
     if (ns.fileExists("SQLInject.exe", "home")) {
-      ns.sqlinject(server);
+      ns.sqlinject(hostname);
     }
-    ns.nuke(server);
+    ns.nuke(hostname);
 
     return true;
   } catch {
@@ -64,9 +64,9 @@ function nukeServer(ns: NS, server: string) {
   }
 }
 
-function getThreadsForScript(ns: NS, script: string, server: string) {
+function getThreadsForScript(ns: NS, script: string, hostname: string) {
   const scriptRam = ns.getScriptRam(script, "home");
-  const serverRam = ns.getServerMaxRam(server);
+  const serverRam = ns.getServerMaxRam(hostname);
 
   let threads = 0;
   if (serverRam > 0) {
@@ -79,17 +79,17 @@ function getThreadsForScript(ns: NS, script: string, server: string) {
 async function deployScript(
   ns: NS,
   script: string,
-  server: string,
+  hostname: string,
   threads: number,
   target: string
 ) {
-  ns.scp(script, server, "home");
-  ns.killall(server);
+  ns.scp(script, hostname, "home");
+  ns.killall(hostname);
 
   if (target) {
-    ns.exec(script, server, threads, target);
+    ns.exec(script, hostname, threads, target);
     await ns.sleep(2000);
   } else {
-    ns.exec(script, server, threads);
+    ns.exec(script, hostname, threads);
   }
 }

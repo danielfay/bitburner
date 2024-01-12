@@ -1,42 +1,50 @@
 import { NS, Server } from "@ns";
 
-export function findPurchasedServers(ns: NS) {
-  let networkMap: Server[] = JSON.parse(ns.read("network_map.txt"));
-  let purchasedServers = networkMap.filter((server) =>
-    server.hostname.startsWith("pserv-")
+export function findPurchasedHostnames(ns: NS) {
+  let hostnames = findAllHostnames(ns);
+  let purchasedHostnames = hostnames.filter((hostname) =>
+    hostname.startsWith("pserv-")
   );
-  return purchasedServers.map((server) => server.hostname);
+
+  return purchasedHostnames;
 }
 
-export function findHackableServers(ns: NS) {
-  let networkMap: Server[] = JSON.parse(ns.read("network_map.txt"));
-  let hackableServers = networkMap.filter(
-    (server) => !server.hostname.startsWith("pserv-")
+export function findHackableHostnames(ns: NS) {
+  let hostnames = findAllHostnames(ns);
+  let hackableHostnames = hostnames.filter(
+    (hostname) => !hostname.startsWith("pserv-")
   );
-  return hackableServers.map((server) => server.hostname);
+
+  return hackableHostnames;
 }
 
-export function findAllServers(ns: NS) {
-  let networkMap: Server[] = JSON.parse(ns.read("network_map.txt"));
-  return networkMap.map((server) => server.hostname);
+export function findAllHostnames(ns: NS) {
+  let hostnames: string[] = [];
+  let hostnamesToVisit = ["home"];
+
+  while (hostnamesToVisit.length > 0) {
+    let hostname = hostnamesToVisit.shift() || "";
+
+    let seenHostname = hostnames.includes(hostname);
+    if (hostname && !seenHostname) {
+      hostnames.push(hostname);
+      hostnamesToVisit = hostnamesToVisit.concat(ns.scan(hostname));
+    }
+  }
+
+  hostnames.shift();
+  return hostnames;
 }
 
 export function createNetworkMapJSON(ns: NS) {
   const fileName = "network_map.txt";
   let networdMap: Server[] = [];
-  let hostnamesToVisit = ["home"];
+  let hostnames = findAllHostnames(ns);
 
-  while (hostnamesToVisit.length > 0) {
-    let hostname = hostnamesToVisit.shift();
-
-    let seenHostname =
-      networdMap.filter((server) => server.hostname === hostname).length > 0;
-    if (!seenHostname) {
-      networdMap.push(ns.getServer(hostname));
-      hostnamesToVisit = hostnamesToVisit.concat(ns.scan(hostname));
-    }
+  for (const hostname of hostnames) {
+    const server = ns.getServer(hostname);
+    networdMap.push(server);
   }
 
-  networdMap.shift();
   ns.write(fileName, JSON.stringify(networdMap), "w");
 }
