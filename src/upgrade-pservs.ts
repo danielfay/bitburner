@@ -38,8 +38,5 @@ export async function main(ns: NS): Promise<void> {
     );
   } else if (method === "buy") {
     ns.tprint(`Upgraded ${upgradedServers} servers.`);
-    if (upgradedServers) {
-      ns.run("deploy-basic-script.js", 1, "purchased", script, target);
-    }
   }
 }
