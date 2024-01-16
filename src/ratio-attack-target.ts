@@ -1,17 +1,17 @@
 import { NS } from "@ns";
 import { findBasicMoneyTarget } from "lib/target";
-import { findAllHostnames } from "lib/networking";
+import { findNukedHostnames } from "lib/networking";
 import { getThreadsForScript } from "lib/memory";
 
 export async function main(ns: NS): Promise<void> {
   let target = (ns.args[0] as string) ?? findBasicMoneyTarget(ns);
-  let hostnames = findAllHostnames(ns);
+  let hostnames = findNukedHostnames(ns);
 
   let hackRatio = 1;
   let hackGroupRam = ns.getScriptRam("hack.js") * hackRatio;
-  let growRatio = 13;
+  let growRatio = 14;
   let growGroupRam = ns.getScriptRam("grow.js") * growRatio;
-  let weakenRatio = 4;
+  let weakenRatio = 5;
   let weakenGroupRam = ns.getScriptRam("weaken.js") * weakenRatio;
   let HGWGroupRam = hackGroupRam + growGroupRam + weakenGroupRam;
 

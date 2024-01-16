@@ -1,4 +1,5 @@
 import { NS, Server } from "@ns";
+import { nukeServer } from "lib/access";
 
 export function findRouteToServer(ns: NS, hostname: string) {
   let routeToServer: string[] = [];
@@ -47,6 +48,20 @@ export function findAllHostnames(ns: NS) {
 
   hostnames.shift();
   return hostnames;
+}
+
+export function findNukedHostnames(ns: NS) {
+  let hostnames = findAllHostnames(ns);
+  let nukedHostnames: string[] = [];
+
+  for (const hostname of hostnames) {
+    const nuked = nukeServer(ns, hostname);
+    if (nuked) {
+      nukedHostnames.push(hostname);
+    }
+  }
+
+  return nukedHostnames;
 }
 
 export function createNetworkMapJSON(ns: NS) {

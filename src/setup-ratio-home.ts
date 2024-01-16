@@ -9,6 +9,7 @@ export async function main(ns: NS): Promise<void> {
   const growThreads = Math.floor(totalThreads * 0.8);
 
   ns.killall("home");
+  ns.run("buy-initial-pservs.js", 1);
   ns.run("weaken.js", weakenThreads, target);
   ns.spawn("grow.js", growThreads, target);
 }
