@@ -11,5 +11,5 @@ export async function main(ns: NS): Promise<void> {
   ns.killall("home");
   ns.run("buy-initial-pservs.js", 1);
   ns.run("weaken.js", weakenThreads, target);
-  ns.spawn("grow.js", growThreads, target);
+  ns.spawn("grow.js", { threads: growThreads, spawnDelay: 1000 }, target);
 }
