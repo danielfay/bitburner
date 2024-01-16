@@ -10,5 +10,5 @@ export async function main(ns: NS): Promise<void> {
   nukeServer(ns, target);
   ns.run("deploy-basic-script.js", 1, script, target, "hackable");
   ns.run("buy-initial-pservs.js", 1, script, target);
-  ns.spawn(script, threads, 1, target);
+  ns.spawn(script, threads, target);
 }
