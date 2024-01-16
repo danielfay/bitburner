@@ -1,9 +1,10 @@
 import { NS } from "@ns";
 import { getThreadsForScript } from "lib/memory";
+import { findBasicMoneyTarget } from "lib/target";
 
 export async function main(ns: NS): Promise<void> {
   const script = (ns.args[0] as string) ?? "basic-money.js";
-  const target = (ns.args[1] as string) ?? "n00dles";
+  const target = (ns.args[1] as string) ?? findBasicMoneyTarget(ns);
   const pservRam = 8;
   let totalPurchasedServers = ns.getPurchasedServers().length;
 
