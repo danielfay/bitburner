@@ -25,6 +25,7 @@ export function deployHGWtoServer(
     "grow.js",
     remainingHostRam
   );
+  let deployedHackThreads = 0;
 
   ns.killall(hostname);
   copyHGWFilesToServer(ns, hostname);
@@ -32,6 +33,7 @@ export function deployHGWtoServer(
   if (HGWGroups) {
     if (hackThreads) {
       ns.exec("hack.js", hostname, hackThreads * HGWGroups, target);
+      deployedHackThreads = hackThreads * HGWGroups;
     }
     ns.exec(
       "grow.js",
@@ -46,4 +48,6 @@ export function deployHGWtoServer(
       ns.exec("weaken.js", hostname, threads, target);
     }
   }
+
+  return deployedHackThreads;
 }
