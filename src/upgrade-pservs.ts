@@ -1,11 +1,8 @@
 import { NS } from "@ns";
-import { findBasicMoneyTarget } from "lib/target";
 
 export async function main(ns: NS): Promise<void> {
   const method = ns.args[0] as string;
   const ramExponent = ns.args[1] as number;
-  const script = (ns.args[2] as string) ?? "basic-money.js";
-  const target = (ns.args[3] as string) ?? findBasicMoneyTarget(ns);
   const newRam = 2 ** ramExponent;
   const baseServerName = "pserv-";
   let remainingMoney = ns.getServerMoneyAvailable("home");

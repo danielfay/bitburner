@@ -11,8 +11,11 @@ import { findBasicMoneyTarget } from "lib/target";
 export async function main(ns: NS): Promise<void> {
   const serverType = (ns.args[0] as string) ?? "all";
   const script = (ns.args[1] as string) ?? "basic-money.js";
-  const target = (ns.args[2] as string) ?? findBasicMoneyTarget(ns);
-  let updatedServers = 0;
+
+  let target = ns.args[2] as string;
+  if (script === "basic-money.js") {
+    target = target ?? findBasicMoneyTarget(ns);
+  }
 
   let hostnames: string[] = [];
   if (serverType === "all") {
@@ -23,6 +26,7 @@ export async function main(ns: NS): Promise<void> {
     hostnames = findPurchasedHostnames(ns);
   }
 
+  let updatedServers = 0;
   for (const hostname of hostnames) {
     const exists = ns.serverExists(hostname);
     if (!exists) {

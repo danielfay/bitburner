@@ -8,5 +8,5 @@ export async function main(ns: NS): Promise<void> {
   const threads = getThreadsForScript(ns, script, "home", 20);
 
   ns.killall("home");
-  ns.spawn(script, threads, target);
+  ns.spawn(script, { threads: threads, spawnDelay: 1000 }, target);
 }
