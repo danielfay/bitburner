@@ -8,11 +8,11 @@ export async function main(ns: NS): Promise<void> {
   let hostnames = findNukedHostnames(ns);
 
   let hackThreads = 1;
-  let hackGroupRam = ns.getScriptRam("hack.js") * hackThreads;
+  let hackGroupRam = ns.getScriptRam("hacking/hack.js") * hackThreads;
   let growThreads = 50;
-  let growGroupRam = ns.getScriptRam("grow.js") * growThreads;
+  let growGroupRam = ns.getScriptRam("hacking/grow.js") * growThreads;
   let weakenThreads = 10;
-  let weakenGroupRam = ns.getScriptRam("weaken.js") * weakenThreads;
+  let weakenGroupRam = ns.getScriptRam("hacking/weaken.js") * weakenThreads;
   let HGWGroupRam = hackGroupRam + growGroupRam + weakenGroupRam;
 
   let totalDeployedHackThreads = 0;

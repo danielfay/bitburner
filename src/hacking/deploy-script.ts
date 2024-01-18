@@ -10,10 +10,10 @@ import { findHackingTarget } from "lib/target";
 
 export async function main(ns: NS): Promise<void> {
   const serverType = (ns.args[0] as string) ?? "all";
-  const script = (ns.args[1] as string) ?? "self-contained-hgw.js";
+  const script = (ns.args[1] as string) ?? "hacking/self-contained-hgw.js";
 
   let target = ns.args[2] as string;
-  if (script === "self-contained-hgw.js") {
+  if (script === "hacking/self-contained-hgw.js") {
     target = target ?? findHackingTarget(ns);
   }
 

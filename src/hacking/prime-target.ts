@@ -10,9 +10,9 @@ export async function main(ns: NS): Promise<void> {
   let hackThreads = 0;
   let hackGroupRam = 0;
   let growThreads = 5;
-  let growGroupRam = ns.getScriptRam("grow.js") * growThreads;
+  let growGroupRam = ns.getScriptRam("hacking/grow.js") * growThreads;
   let weakenThreads = 1;
-  let weakenGroupRam = ns.getScriptRam("weaken.js") * weakenThreads;
+  let weakenGroupRam = ns.getScriptRam("hacking/weaken.js") * weakenThreads;
   let HGWGroupRam = hackGroupRam + growGroupRam + weakenGroupRam;
 
   for (const hostname of hostnames) {
@@ -31,5 +31,5 @@ export async function main(ns: NS): Promise<void> {
     await ns.sleep(1000);
   }
 
-  ns.spawn("ratio-attack-target.js", { threads: 1, spawnDelay: 1000 });
+  ns.spawn("hacking/ratio-attack-target.js", { threads: 1, spawnDelay: 1000 });
 }
