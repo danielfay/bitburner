@@ -1,10 +1,14 @@
 import { NS } from "@ns";
 import { getThreadsForRemainingMemory, getThreadsForScript } from "lib/memory";
 
+export const hackScriptName = "hacking/hack.js";
+export const growScriptName = "hacking/grow.js";
+export const weakenScriptName = "hacking/weaken.js";
+
 export function copyHGWFilesToServer(ns: NS, hostname: string) {
-  ns.scp("hack.js", hostname);
-  ns.scp("grow.js", hostname);
-  ns.scp("weaken.js", hostname);
+  ns.scp(hackScriptName, hostname);
+  ns.scp(growScriptName, hostname);
+  ns.scp(weakenScriptName, hostname);
 }
 
 export function deployHGWtoServer(
@@ -22,7 +26,7 @@ export function deployHGWtoServer(
   const extraGrowThreads = getThreadsForRemainingMemory(
     ns,
     hostname,
-    "grow.js",
+    growScriptName,
     remainingHostRam
   );
   let deployedHackThreads = 0;
@@ -32,20 +36,20 @@ export function deployHGWtoServer(
 
   if (HGWGroups) {
     if (hackThreads) {
-      ns.exec("hack.js", hostname, hackThreads * HGWGroups, target);
+      ns.exec(hackScriptName, hostname, hackThreads * HGWGroups, target);
       deployedHackThreads = hackThreads * HGWGroups;
     }
     ns.exec(
-      "grow.js",
+      growScriptName,
       hostname,
       growThreads * HGWGroups + extraGrowThreads,
       target
     );
-    ns.exec("weaken.js", hostname, weakenThreads * HGWGroups, target);
+    ns.exec(weakenScriptName, hostname, weakenThreads * HGWGroups, target);
   } else {
-    const threads = getThreadsForScript(ns, "weaken.js", hostname);
+    const threads = getThreadsForScript(ns, weakenScriptName, hostname);
     if (threads) {
-      ns.exec("weaken.js", hostname, threads, target);
+      ns.exec(weakenScriptName, hostname, threads, target);
     }
   }
 

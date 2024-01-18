@@ -1,13 +1,14 @@
 import { NS } from "@ns";
 import { getThreadsForScript } from "lib/memory";
 import { findHackingTarget } from "lib/target";
+import { growScriptName, hackScriptName, weakenScriptName } from "lib/deploy";
 
 export async function main(ns: NS): Promise<void> {
   const target = (ns.args[0] as string) ?? findHackingTarget(ns);
   const hackThreads = 5;
   const totalThreads = getThreadsForScript(
     ns,
-    "hacking/grow.js",
+    growScriptName,
     "home",
     20 + hackThreads
   );
@@ -16,11 +17,7 @@ export async function main(ns: NS): Promise<void> {
 
   ns.killall("home");
   ns.run("pservs/buy-initial.js");
-  ns.run("hacking/weaken.js", weakenThreads, target);
-  ns.run("hacking/hack.js", hackThreads, target);
-  ns.spawn(
-    "hacking/grow.js",
-    { threads: growThreads, spawnDelay: 1000 },
-    target
-  );
+  ns.run(weakenScriptName, weakenThreads, target);
+  ns.run(hackScriptName, hackThreads, target);
+  ns.spawn(growScriptName, { threads: growThreads, spawnDelay: 1000 }, target);
 }
