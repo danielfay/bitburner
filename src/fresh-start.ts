@@ -1,11 +1,11 @@
 import { NS } from "@ns";
 import { getThreadsForScript } from "lib/memory";
 import { nukeServer } from "lib/access";
-import { findBasicMoneyTarget } from "lib/target";
+import { findHackingTarget } from "lib/target";
 
 export async function main(ns: NS): Promise<void> {
   const script = "basic-money.js";
-  const target = findBasicMoneyTarget(ns);
+  const target = findHackingTarget(ns);
   const threads = getThreadsForScript(ns, script, "home", 25);
 
   nukeServer(ns, target);

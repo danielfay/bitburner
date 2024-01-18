@@ -1,10 +1,10 @@
 import { NS } from "@ns";
-import { findBasicMoneyTarget } from "lib/target";
+import { findHackingTarget } from "lib/target";
 import { findNukedHostnames } from "lib/networking";
 import { deployHGWtoServer } from "lib/deploy";
 
 export async function main(ns: NS): Promise<void> {
-  let target = (ns.args[0] as string) ?? findBasicMoneyTarget(ns);
+  let target = (ns.args[0] as string) ?? findHackingTarget(ns);
   let hostnames = findNukedHostnames(ns);
 
   let hackThreads = 0;

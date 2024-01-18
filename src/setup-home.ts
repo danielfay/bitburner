@@ -1,9 +1,9 @@
 import { NS } from "@ns";
 import { getThreadsForScript } from "lib/memory";
-import { findBasicMoneyTarget } from "lib/target";
+import { findHackingTarget } from "lib/target";
 
 export async function main(ns: NS): Promise<void> {
-  const target = (ns.args[0] as string) ?? findBasicMoneyTarget(ns);
+  const target = (ns.args[0] as string) ?? findHackingTarget(ns);
   const hackThreads = 5;
   const totalThreads = getThreadsForScript(
     ns,

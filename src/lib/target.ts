@@ -1,6 +1,6 @@
 import { NS } from "@ns";
 
-export function findBasicMoneyTarget(ns: NS) {
+export function findHackingTarget(ns: NS) {
   let basicMoneyTarget = "n00dles";
   let hackingSkill = ns.getPlayer().skills.hacking;
 

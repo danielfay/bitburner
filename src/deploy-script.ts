@@ -6,15 +6,15 @@ import {
   findHackableHostnames,
   findPurchasedHostnames,
 } from "lib/networking";
-import { findBasicMoneyTarget } from "lib/target";
+import { findHackingTarget } from "lib/target";
 
 export async function main(ns: NS): Promise<void> {
   const serverType = (ns.args[0] as string) ?? "all";
-  const script = (ns.args[1] as string) ?? "basic-money.js";
+  const script = (ns.args[1] as string) ?? "self-contained-hgw.js";
 
   let target = ns.args[2] as string;
-  if (script === "basic-money.js") {
-    target = target ?? findBasicMoneyTarget(ns);
+  if (script === "self-contained-hgw.js") {
+    target = target ?? findHackingTarget(ns);
   }
 
   let hostnames: string[] = [];
