@@ -7,7 +7,7 @@ export async function main(ns: NS): Promise<void> {
   const hackThreads = 5;
   const totalThreads = getThreadsForScript(
     ns,
-    "grow.js",
+    "hacking/grow.js",
     "home",
     20 + hackThreads
   );
@@ -15,8 +15,12 @@ export async function main(ns: NS): Promise<void> {
   const growThreads = Math.floor(totalThreads * 0.8);
 
   ns.killall("home");
-  ns.run("buy-initial-pservs.js");
-  ns.run("weaken.js", weakenThreads, target);
-  ns.run("hack.js", hackThreads, target);
-  ns.spawn("grow.js", { threads: growThreads, spawnDelay: 1000 }, target);
+  ns.run("pservs/buy-initial.js");
+  ns.run("hacking/weaken.js", weakenThreads, target);
+  ns.run("hacking/hack.js", hackThreads, target);
+  ns.spawn(
+    "hacking/grow.js",
+    { threads: growThreads, spawnDelay: 1000 },
+    target
+  );
 }
