@@ -8,49 +8,66 @@ type Equipment = {
 
 export function recruitNewMembers(ns: NS) {
   while (ns.gang.canRecruitMember()) {
-    ns.gang.recruitMember(generateMemberName());
+    const memberName = generateMemberName();
+    ns.gang.recruitMember(memberName);
+    ns.gang.setMemberTask(memberName, "Train Combat");
   }
 }
 
-export function assignMembers(ns: NS) {
+export async function assignMembers(ns: NS) {
   const tasks = ns.gang.getTaskNames();
   tasks.shift();
   const vigilanteJusticeTask = tasks[9];
   const trainCombat = tasks[10];
-  const gangInfo = ns.gang.getGangInformation();
-  const wantedLevel = gangInfo.wantedLevel;
 
   const members = ns.gang.getMemberNames();
   for (const member of members) {
-    if (wantedLevel > 1) {
+    const gangInfo = ns.gang.getGangInformation();
+    const wantedLevel = gangInfo.wantedLevel;
+    const wantedLevelGainRate = gangInfo.wantedLevelGainRate;
+    if (wantedLevel > 1 || wantedLevelGainRate === 0) {
       ns.gang.setMemberTask(member, vigilanteJusticeTask);
       continue;
     }
 
-    const mostProfitableTask = findMostProfitableTask(ns, tasks, member);
-    if (mostProfitableTask) {
-      ns.gang.setMemberTask(member, mostProfitableTask);
+    const mostProfitableUnnoticedTask = await findMostProfitableUnnoticedTask(
+      ns,
+      tasks,
+      member
+    );
+    if (mostProfitableUnnoticedTask) {
+      ns.gang.setMemberTask(member, mostProfitableUnnoticedTask);
+      await ns.sleep(1000);
     } else {
       ns.gang.setMemberTask(member, trainCombat);
     }
   }
 }
 
-function findMostProfitableTask(ns: NS, tasks: string[], member: string) {
-  let mostProfitableTask = "";
+async function findMostProfitableUnnoticedTask(
+  ns: NS,
+  tasks: string[],
+  member: string
+) {
+  let mostProfitableUnnoticedTask = "";
 
   for (const task of tasks) {
     ns.gang.setMemberTask(member, task);
-    const memberInfo = ns.gang.getMemberInformation(member);
+    await ns.sleep(1000);
 
-    if (memberInfo.moneyGain > 0) {
-      mostProfitableTask = task;
+    const gangInfo = ns.gang.getGangInformation();
+    const memberInfo = ns.gang.getMemberInformation(member);
+    if (
+      memberInfo.moneyGain > 0 &&
+      gangInfo.wantedLevelGainRate + memberInfo.wantedLevelGain < 0
+    ) {
+      mostProfitableUnnoticedTask = task;
     } else {
       break;
     }
   }
 
-  return mostProfitableTask;
+  return mostProfitableUnnoticedTask;
 }
 
 export function equipMembers(ns: NS) {
@@ -88,7 +105,10 @@ export function ascendMembers(ns: NS) {
   const members = ns.gang.getMemberNames();
 
   for (const member of members) {
-    ns.gang.ascendMember(member);
+    let ascendedInfo = ns.gang.ascendMember(member);
+    if (ascendedInfo) {
+      ns.gang.setMemberTask(member, "Train Combat");
+    }
   }
 }
 

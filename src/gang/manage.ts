@@ -7,14 +7,19 @@ import {
 } from "lib/gang";
 
 export async function main(ns: NS): Promise<void> {
+  const forProfit = ns.args[0];
+
   ns.disableLog("sleep");
+  ns.tail();
 
   while (true) {
     if (ns.gang.inGang()) {
       recruitNewMembers(ns);
       ascendMembers(ns);
-      equipMembers(ns);
-      assignMembers(ns);
+      if (!forProfit) {
+        equipMembers(ns);
+      }
+      //await assignMembers(ns);
     } else {
       ns.gang.createGang("Slum Snakes");
     }
