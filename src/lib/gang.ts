@@ -20,8 +20,18 @@ export function recruitNewMembers(ns: NS) {
 
 export async function assignMembers(ns: NS, priority: string) {
   const members = ns.gang.getMemberNames();
+  const trainingTask = "Train Combat";
 
   for (const member of members) {
+    let memberInfo = ns.gang.getMemberInformation(member);
+
+    const memberCombatStatAverage =
+      (memberInfo.str + memberInfo.def + memberInfo.dex) / 3;
+    if (memberCombatStatAverage < 100) {
+      quietMemberTaskAssign(ns, member, trainingTask);
+      continue;
+    }
+
     const tasks = ns.gang
       .getTaskNames()
       .filter((task) => !task.includes("Unassigned"))
@@ -33,7 +43,7 @@ export async function assignMembers(ns: NS, priority: string) {
 
     for (const task of tasks) {
       ns.gang.setMemberTask(member, task);
-      const memberInfo = ns.gang.getMemberInformation(member);
+      memberInfo = ns.gang.getMemberInformation(member);
 
       let surplusRespect = memberInfo.respectGain - memberInfo.wantedLevelGain;
       let newBestGain = 0;
@@ -55,7 +65,7 @@ export async function assignMembers(ns: NS, priority: string) {
     if (bestTask) {
       quietMemberTaskAssign(ns, member, bestTask);
     } else {
-      quietMemberTaskAssign(ns, member, "Train Combat");
+      quietMemberTaskAssign(ns, member, trainingTask);
     }
   }
 }
@@ -80,7 +90,10 @@ export function equipMembers(ns: NS) {
     for (const member of members) {
       const memberInfo = ns.gang.getMemberInformation(member);
       if (!memberInfo.upgrades.includes(equip.name)) {
-        ns.gang.purchaseEquipment(member, equip.name);
+        const bought = ns.gang.purchaseEquipment(member, equip.name);
+        if (bought) {
+          ns.print(`Bought ${equip.name} for ${member}.`);
+        }
       }
     }
   }
@@ -88,16 +101,17 @@ export function equipMembers(ns: NS) {
 
 function getPurchasableEquipment(ns: NS) {
   let equipment: Equipment[] = [];
+  const ignoredEquipmentTypes = ["Augmentation", "Rootkit"];
   const availableMoney = ns.getServerMoneyAvailable("home");
-  const equipmentNames = ns.gang
-    .getEquipmentNames()
-    .filter((equipmentName) => !equipmentName.includes("Rootkit"));
+  const equipmentNames = ns.gang.getEquipmentNames();
 
   for (const equipmentName of equipmentNames) {
     const cost = ns.gang.getEquipmentCost(equipmentName);
     if (cost < availableMoney) {
       const type = ns.gang.getEquipmentType(equipmentName);
-      equipment.push({ name: equipmentName, type, cost });
+      if (!ignoredEquipmentTypes.includes(type)) {
+        equipment.push({ name: equipmentName, type, cost });
+      }
     }
   }
 
@@ -314,9 +328,9 @@ const lastNames = [
   "Morrow",
   "Newton",
   "Orozco",
-  "O’brien",
-  "O’Connor",
-  "O’Neal",
+  "O'brien",
+  "O'Connor",
+  "O'Neal",
   "Parks",
   "Pratt",
   "Rich",

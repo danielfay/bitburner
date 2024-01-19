@@ -12,6 +12,8 @@ export async function main(ns: NS): Promise<void> {
 
   ns.disableLog("sleep");
   ns.disableLog("getServerMoneyAvailable");
+  ns.disableLog("gang.setMemberTask");
+  ns.disableLog("gang.purchaseEquipment");
   ns.tail();
 
   while (true) {
