@@ -7,7 +7,8 @@ import {
 } from "lib/gang";
 
 export async function main(ns: NS): Promise<void> {
-  const forProfit = ns.args[0];
+  const priority = ns.args[0] as string;
+  const forProfit = ns.args[1] as string;
 
   ns.disableLog("sleep");
   ns.disableLog("getServerMoneyAvailable");
@@ -20,7 +21,7 @@ export async function main(ns: NS): Promise<void> {
       if (!forProfit) {
         equipMembers(ns);
       }
-      await assignMembers(ns);
+      await assignMembers(ns, priority);
     } else {
       ns.gang.createGang("Slum Snakes");
     }

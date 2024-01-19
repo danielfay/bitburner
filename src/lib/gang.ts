@@ -1,10 +1,15 @@
-import { GangMemberAscension, NS } from "@ns";
+import { GangMemberAscension, GangMemberInfo, NS } from "@ns";
 
 type Equipment = {
   name: string;
   type: string;
   cost: number;
 };
+
+enum GangMemberInfoGainKey {
+  moneyGain = "moneyGain",
+  respectGain = "respectGain",
+}
 
 export function recruitNewMembers(ns: NS) {
   while (ns.gang.canRecruitMember()) {
@@ -13,7 +18,7 @@ export function recruitNewMembers(ns: NS) {
   }
 }
 
-export async function assignMembers(ns: NS) {
+export async function assignMembers(ns: NS, priority: string) {
   const members = ns.gang.getMemberNames();
 
   for (const member of members) {
@@ -23,21 +28,32 @@ export async function assignMembers(ns: NS) {
       .filter((task) => !task.includes("Train"))
       .filter((task) => !task.includes("Vigilante"))
       .filter((task) => !task.includes("Territory"));
-    let bestRespectTask = "";
-    let bestRespectGain = 0;
+    let bestTask = "";
+    let bestGain = 0;
 
     for (const task of tasks) {
       ns.gang.setMemberTask(member, task);
       const memberInfo = ns.gang.getMemberInformation(member);
-      const respectSerplus =
-        memberInfo.respectGain - memberInfo.wantedLevelGain;
-      if (respectSerplus > 0 && memberInfo.respectGain > bestRespectGain) {
-        bestRespectTask = task;
-        bestRespectGain = memberInfo.respectGain;
+
+      let surplusRespect = memberInfo.respectGain - memberInfo.wantedLevelGain;
+      let newBestGain = 0;
+      let newBest = false;
+      const memberInfoGainKey: keyof GangMemberInfo =
+        `${priority}Gain` as GangMemberInfoGainKey;
+
+      newBest = memberInfo[memberInfoGainKey] > bestGain;
+      if (newBest) {
+        newBestGain = memberInfo[memberInfoGainKey];
+      }
+
+      if (newBest && surplusRespect > 0) {
+        bestTask = task;
+        bestGain = newBestGain;
       }
     }
-    if (bestRespectTask) {
-      quietMemberTaskAssign(ns, member, bestRespectTask);
+
+    if (bestTask) {
+      quietMemberTaskAssign(ns, member, bestTask);
     } else {
       quietMemberTaskAssign(ns, member, "Train Combat");
     }
@@ -73,15 +89,15 @@ export function equipMembers(ns: NS) {
 function getPurchasableEquipment(ns: NS) {
   let equipment: Equipment[] = [];
   const availableMoney = ns.getServerMoneyAvailable("home");
-  const equipmentNames = ns.gang.getEquipmentNames();
+  const equipmentNames = ns.gang
+    .getEquipmentNames()
+    .filter((equipmentName) => !equipmentName.includes("Rootkit"));
 
   for (const equipmentName of equipmentNames) {
     const cost = ns.gang.getEquipmentCost(equipmentName);
     if (cost < availableMoney) {
       const type = ns.gang.getEquipmentType(equipmentName);
-      if (type !== "Rootkit") {
-        equipment.push({ name: equipmentName, type, cost });
-      }
+      equipment.push({ name: equipmentName, type, cost });
     }
   }
 
@@ -103,7 +119,7 @@ export function ascendMembers(ns: NS) {
 }
 
 function shouldAscend(ns: NS, ascensionResult: GangMemberAscension) {
-  const multImprovementThreshhold = 1.2;
+  const multImprovementThreshhold = 1.5;
 
   ns.print(`Ascension improvement threshhold: ${multImprovementThreshhold}`);
   ns.print(`str: ${ns.formatNumber(ascensionResult.str, 3)}`);
