@@ -15,27 +15,33 @@ export function recruitNewMembers(ns: NS) {
 
 export async function assignMembers(ns: NS) {
   const members = ns.gang.getMemberNames();
-  let lowestStatMember = "";
-  let lowestStatAverage = 0;
 
   for (const member of members) {
-    const memberInfo = ns.gang.getMemberInformation(member);
-    const memberStatAverage =
-      (memberInfo.agi + memberInfo.def + memberInfo.dex + memberInfo.str) / 4;
+    const tasks = ns.gang
+      .getTaskNames()
+      .filter((task) => !task.includes("Unassigned"))
+      .filter((task) => !task.includes("Train"))
+      .filter((task) => !task.includes("Vigilante"))
+      .filter((task) => !task.includes("Territory"));
+    let bestRespectTask = "";
+    let bestRespectGain = 0;
 
-    if (memberStatAverage < 25) {
+    for (const task of tasks) {
+      ns.gang.setMemberTask(member, task);
+      const memberInfo = ns.gang.getMemberInformation(member);
+      const respectSerplus =
+        memberInfo.respectGain - memberInfo.wantedLevelGain;
+      if (respectSerplus > 0 && memberInfo.respectGain > bestRespectGain) {
+        bestRespectTask = task;
+        bestRespectGain = memberInfo.respectGain;
+      }
+    }
+    if (bestRespectTask) {
+      quietMemberTaskAssign(ns, member, bestRespectTask);
+    } else {
       quietMemberTaskAssign(ns, member, "Train Combat");
-      continue;
     }
-
-    if (!lowestStatAverage || memberStatAverage < lowestStatAverage) {
-      lowestStatAverage = memberStatAverage;
-      lowestStatMember = member;
-    }
-    quietMemberTaskAssign(ns, member, "Mug People");
   }
-
-  quietMemberTaskAssign(ns, lowestStatMember, "Vigilante Justice");
 }
 
 function quietMemberTaskAssign(ns: NS, member: string, task: string) {
