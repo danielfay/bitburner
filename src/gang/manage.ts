@@ -10,6 +10,7 @@ export async function main(ns: NS): Promise<void> {
   const forProfit = ns.args[0];
 
   ns.disableLog("sleep");
+  ns.disableLog("getServerMoneyAvailable");
   ns.tail();
 
   while (true) {
@@ -19,7 +20,7 @@ export async function main(ns: NS): Promise<void> {
       if (!forProfit) {
         equipMembers(ns);
       }
-      //await assignMembers(ns);
+      await assignMembers(ns);
     } else {
       ns.gang.createGang("Slum Snakes");
     }

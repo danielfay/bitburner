@@ -1,4 +1,4 @@
-import { NS } from "@ns";
+import { GangMemberAscension, NS } from "@ns";
 
 type Equipment = {
   name: string;
@@ -10,64 +10,40 @@ export function recruitNewMembers(ns: NS) {
   while (ns.gang.canRecruitMember()) {
     const memberName = generateMemberName();
     ns.gang.recruitMember(memberName);
-    ns.gang.setMemberTask(memberName, "Train Combat");
   }
 }
 
 export async function assignMembers(ns: NS) {
-  const tasks = ns.gang.getTaskNames();
-  tasks.shift();
-  const vigilanteJusticeTask = tasks[9];
-  const trainCombat = tasks[10];
-
   const members = ns.gang.getMemberNames();
+  let lowestStatMember = "";
+  let lowestStatAverage = 0;
+
   for (const member of members) {
-    const gangInfo = ns.gang.getGangInformation();
-    const wantedLevel = gangInfo.wantedLevel;
-    const wantedLevelGainRate = gangInfo.wantedLevelGainRate;
-    if (wantedLevel > 1 || wantedLevelGainRate === 0) {
-      ns.gang.setMemberTask(member, vigilanteJusticeTask);
+    const memberInfo = ns.gang.getMemberInformation(member);
+    const memberStatAverage =
+      (memberInfo.agi + memberInfo.def + memberInfo.dex + memberInfo.str) / 4;
+
+    if (memberStatAverage < 25) {
+      quietMemberTaskAssign(ns, member, "Train Combat");
       continue;
     }
 
-    const mostProfitableUnnoticedTask = await findMostProfitableUnnoticedTask(
-      ns,
-      tasks,
-      member
-    );
-    if (mostProfitableUnnoticedTask) {
-      ns.gang.setMemberTask(member, mostProfitableUnnoticedTask);
-      await ns.sleep(1000);
-    } else {
-      ns.gang.setMemberTask(member, trainCombat);
+    if (!lowestStatAverage || memberStatAverage < lowestStatAverage) {
+      lowestStatAverage = memberStatAverage;
+      lowestStatMember = member;
     }
+    quietMemberTaskAssign(ns, member, "Mug People");
   }
+
+  quietMemberTaskAssign(ns, lowestStatMember, "Vigilante Justice");
 }
 
-async function findMostProfitableUnnoticedTask(
-  ns: NS,
-  tasks: string[],
-  member: string
-) {
-  let mostProfitableUnnoticedTask = "";
+function quietMemberTaskAssign(ns: NS, member: string, task: string) {
+  const memberInfo = ns.gang.getMemberInformation(member);
 
-  for (const task of tasks) {
+  if (memberInfo.task !== task) {
     ns.gang.setMemberTask(member, task);
-    await ns.sleep(1000);
-
-    const gangInfo = ns.gang.getGangInformation();
-    const memberInfo = ns.gang.getMemberInformation(member);
-    if (
-      memberInfo.moneyGain > 0 &&
-      gangInfo.wantedLevelGainRate + memberInfo.wantedLevelGain < 0
-    ) {
-      mostProfitableUnnoticedTask = task;
-    } else {
-      break;
-    }
   }
-
-  return mostProfitableUnnoticedTask;
 }
 
 export function equipMembers(ns: NS) {
@@ -80,7 +56,10 @@ export function equipMembers(ns: NS) {
       break;
     }
     for (const member of members) {
-      ns.gang.purchaseEquipment(member, equip.name);
+      const memberInfo = ns.gang.getMemberInformation(member);
+      if (!memberInfo.upgrades.includes(equip.name)) {
+        ns.gang.purchaseEquipment(member, equip.name);
+      }
     }
   }
 }
@@ -94,7 +73,9 @@ function getPurchasableEquipment(ns: NS) {
     const cost = ns.gang.getEquipmentCost(equipmentName);
     if (cost < availableMoney) {
       const type = ns.gang.getEquipmentType(equipmentName);
-      equipment.push({ name: equipmentName, type, cost });
+      if (type !== "Rootkit") {
+        equipment.push({ name: equipmentName, type, cost });
+      }
     }
   }
 
@@ -105,11 +86,35 @@ export function ascendMembers(ns: NS) {
   const members = ns.gang.getMemberNames();
 
   for (const member of members) {
-    let ascendedInfo = ns.gang.ascendMember(member);
-    if (ascendedInfo) {
-      ns.gang.setMemberTask(member, "Train Combat");
+    const ascensionResult = ns.gang.getAscensionResult(member);
+    if (ascensionResult) {
+      ns.print(`Assessing if ${member} should ascend...`);
+      if (shouldAscend(ns, ascensionResult)) {
+        ns.gang.ascendMember(member);
+      }
     }
   }
+}
+
+function shouldAscend(ns: NS, ascensionResult: GangMemberAscension) {
+  const multImprovementThreshhold = 1.2;
+
+  ns.print(`Ascension improvement threshhold: ${multImprovementThreshhold}`);
+  ns.print(`str: ${ns.formatNumber(ascensionResult.str, 3)}`);
+  ns.print(`def: ${ns.formatNumber(ascensionResult.def, 3)}`);
+  ns.print(`dex: ${ns.formatNumber(ascensionResult.dex, 3)}`);
+  ns.print(`agi: ${ns.formatNumber(ascensionResult.agi, 3)}`);
+  const strPassThreshhold = ascensionResult.str > multImprovementThreshhold;
+  const defPassThreshhold = ascensionResult.def > multImprovementThreshhold;
+  const dexPassThreshhold = ascensionResult.dex > multImprovementThreshhold;
+  const agiPassThreshhold = ascensionResult.agi > multImprovementThreshhold;
+
+  return (
+    strPassThreshhold ||
+    defPassThreshhold ||
+    dexPassThreshhold ||
+    agiPassThreshhold
+  );
 }
 
 function generateMemberName() {
