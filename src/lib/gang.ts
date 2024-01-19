@@ -26,7 +26,7 @@ export async function assignMembers(ns: NS, priority: string) {
     let memberInfo = ns.gang.getMemberInformation(member);
 
     const memberCombatStatAverage =
-      (memberInfo.str + memberInfo.def + memberInfo.dex) / 3;
+      (memberInfo.str + memberInfo.def + memberInfo.dex + memberInfo.agi) / 4;
     if (memberCombatStatAverage < 100) {
       quietMemberTaskAssign(ns, member, trainingTask);
       continue;
@@ -45,18 +45,17 @@ export async function assignMembers(ns: NS, priority: string) {
       ns.gang.setMemberTask(member, task);
       memberInfo = ns.gang.getMemberInformation(member);
 
-      let surplusRespect = memberInfo.respectGain - memberInfo.wantedLevelGain;
-      let newBestGain = 0;
-      let newBest = false;
       const memberInfoGainKey: keyof GangMemberInfo =
         `${priority}Gain` as GangMemberInfoGainKey;
-
-      newBest = memberInfo[memberInfoGainKey] > bestGain;
+      const newBest = memberInfo[memberInfoGainKey] > bestGain;
+      let newBestGain = 0;
       if (newBest) {
         newBestGain = memberInfo[memberInfoGainKey];
       }
 
-      if (newBest && surplusRespect > 0) {
+      const surplusRespect =
+        memberInfo.respectGain - memberInfo.wantedLevelGain > 0;
+      if (newBest && surplusRespect) {
         bestTask = task;
         bestGain = newBestGain;
       }
