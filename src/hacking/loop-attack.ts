@@ -36,4 +36,6 @@ export async function main(ns: NS): Promise<void> {
   }
 
   ns.tprint(`Deplyed a total of ${totalDeployedHackThreads} hacking threads.`);
+
+  ns.spawn("setup-home.js", { threads: 1, spawnDelay: 1000 });
 }
