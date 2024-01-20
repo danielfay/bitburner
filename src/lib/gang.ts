@@ -11,6 +11,25 @@ enum GangMemberInfoGainKey {
   respectGain = "respectGain",
 }
 
+export async function mobTerritoryClash(ns: NS) {
+  const members = ns.gang.getMemberNames();
+  const territoryTask = "Territory Warfare";
+  const currentPower = ns.gang.getGangInformation().power;
+  let newPower = currentPower;
+
+  while (newPower === currentPower) {
+    for (const member of members) {
+      quietMemberTaskAssign(ns, member, territoryTask);
+    }
+
+    await ns.sleep(1000);
+
+    newPower = ns.gang.getGangInformation().power;
+  }
+
+  return performance.now();
+}
+
 export function recruitNewMembers(ns: NS) {
   while (ns.gang.canRecruitMember()) {
     const memberName = generateMemberName();
@@ -69,7 +88,7 @@ export async function assignMembers(ns: NS, priority: string) {
   }
 }
 
-function quietMemberTaskAssign(ns: NS, member: string, task: string) {
+export function quietMemberTaskAssign(ns: NS, member: string, task: string) {
   const memberInfo = ns.gang.getMemberInformation(member);
 
   if (memberInfo.task !== task) {
@@ -100,7 +119,7 @@ export function equipMembers(ns: NS) {
 
 function getPurchasableEquipment(ns: NS) {
   let equipment: Equipment[] = [];
-  const ignoredEquipmentTypes = ["Augmentation", "Rootkit"];
+  const ignoredEquipmentTypes = ["Augmentation"];
   const availableMoney = ns.getServerMoneyAvailable("home");
   const equipmentNames = ns.gang.getEquipmentNames();
 

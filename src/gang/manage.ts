@@ -3,6 +3,7 @@ import {
   ascendMembers,
   assignMembers,
   equipMembers,
+  mobTerritoryClash,
   recruitNewMembers,
 } from "lib/gang";
 
@@ -18,15 +19,20 @@ export async function main(ns: NS): Promise<void> {
 
   while (true) {
     if (ns.gang.inGang()) {
+      const lastTerritoryClash = await mobTerritoryClash(ns);
+
       recruitNewMembers(ns);
       ascendMembers(ns);
       if (!forProfit) {
         equipMembers(ns);
       }
       await assignMembers(ns, priority);
+
+      const currentTime = performance.now();
+      await ns.sleep(19000 - (currentTime - lastTerritoryClash));
     } else {
       ns.gang.createGang("Slum Snakes");
+      await ns.sleep(10000);
     }
-    await ns.sleep(10000);
   }
 }
