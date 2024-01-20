@@ -11,6 +11,6 @@ export async function main(ns: NS): Promise<void> {
       ns.purchaseServer("pserv-" + totalPurchasedServers, pservRam);
       totalPurchasedServers = totalPurchasedServers + 1;
     }
-    await ns.sleep(1000);
+    await ns.sleep(500);
   }
 }

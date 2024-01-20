@@ -11,7 +11,7 @@ enum GangMemberInfoGainKey {
   respectGain = "respectGain",
 }
 
-export async function mobTerritoryClash(ns: NS) {
+export async function mobTerritoryClash(ns: NS, ignoreBonusTime: Boolean) {
   const members = ns.gang.getMemberNames();
   const territoryTask = "Territory Warfare";
   const currentPower = ns.gang.getGangInformation().power;
@@ -24,7 +24,9 @@ export async function mobTerritoryClash(ns: NS) {
 
     await ns.sleep(1000);
 
-    newPower = ns.gang.getGangInformation().power;
+    if (ns.gang.getBonusTime() <= 0 || ignoreBonusTime) {
+      newPower = ns.gang.getGangInformation().power;
+    }
   }
 
   return performance.now();

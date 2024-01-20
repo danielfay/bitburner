@@ -22,7 +22,17 @@ export async function main(ns: NS): Promise<void> {
     ns.killall("home");
   }
   ns.run("pservs/buy-initial.js");
-  ns.run(weakenScriptName, weakenThreads, target);
-  ns.run(hackScriptName, hackThreads, target);
-  ns.spawn(growScriptName, { threads: growThreads, spawnDelay: 1000 }, target);
+  if (weakenThreads) {
+    ns.run(weakenScriptName, weakenThreads, target);
+  }
+  if (hackThreads) {
+    ns.run(hackScriptName, hackThreads, target);
+  }
+  if (growThreads) {
+    ns.spawn(
+      growScriptName,
+      { threads: growThreads, spawnDelay: 1000 },
+      target
+    );
+  }
 }
