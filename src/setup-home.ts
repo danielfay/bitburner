@@ -4,7 +4,8 @@ import { findHackingTarget } from "lib/target";
 import { growScriptName, hackScriptName, weakenScriptName } from "lib/deploy";
 
 export async function main(ns: NS): Promise<void> {
-  const target = (ns.args[0] as string) ?? findHackingTarget(ns);
+  const killAllProcesses = Boolean(ns.args[0]);
+  const target = findHackingTarget(ns);
   const tenPercentRam = Math.floor(ns.getServerMaxRam("home") * 0.1);
   const homeReserveRam = tenPercentRam >= 20 ? tenPercentRam : 20;
   const hackThreads = 5;
@@ -17,7 +18,9 @@ export async function main(ns: NS): Promise<void> {
   const weakenThreads = Math.floor(totalThreads * 0.2);
   const growThreads = Math.floor(totalThreads * 0.8);
 
-  ns.killall("home");
+  if (killAllProcesses) {
+    ns.killall("home");
+  }
   ns.run("pservs/buy-initial.js");
   ns.run(weakenScriptName, weakenThreads, target);
   ns.run(hackScriptName, hackThreads, target);
