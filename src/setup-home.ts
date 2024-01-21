@@ -6,7 +6,7 @@ import { growScriptName, hackScriptName, weakenScriptName } from "lib/deploy";
 export async function main(ns: NS): Promise<void> {
   const killAllProcesses = Boolean(ns.args[0]);
   const target = findHackingTarget(ns);
-  const tenPercentRam = Math.floor(ns.getServerMaxRam("home") * 0.1);
+  const tenPercentRam = Math.floor(ns.getServerMaxRam("home") * 0.2);
   const homeReserveRam = tenPercentRam >= 20 ? tenPercentRam : 20;
   const hackThreads = 5;
   const totalThreads = getThreadsForScript(

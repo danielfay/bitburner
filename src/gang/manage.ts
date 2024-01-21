@@ -9,7 +9,7 @@ import {
 
 export async function main(ns: NS): Promise<void> {
   const priority = ns.args[0] as string;
-  const forProfit = ns.args[1] as string;
+  const forProfit = Boolean(ns.args[1]);
   const ignoreBonusTime = Boolean(ns.args[2]);
 
   ns.disableLog("sleep");
@@ -20,6 +20,11 @@ export async function main(ns: NS): Promise<void> {
 
   while (true) {
     if (ns.gang.inGang()) {
+      const members = ns.gang.getMemberNames();
+      if (members.length === 0) {
+        recruitNewMembers(ns);
+      }
+
       const lastTerritoryClash = await mobTerritoryClash(ns, ignoreBonusTime);
 
       recruitNewMembers(ns);
