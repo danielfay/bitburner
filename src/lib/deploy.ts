@@ -1,8 +1,14 @@
 import { NS } from "@ns";
 import { getThreadsForRemainingMemory, getThreadsForScript } from "lib/memory";
 
-export const hackScriptName = "hacking/hack.js";
+export const deployScriptName = "hacking/deploy-script.js";
+export const gangManagerScriptName = "gang/manage.js";
 export const growScriptName = "hacking/grow.js";
+export const hackScriptName = "hacking/hack.js";
+export const loopAttackScriptName = "hacking/loop-attack.js";
+export const primeForLoopAttackScriptName = "hacking/prime-for-loop-attack.js";
+export const pservsBuyInitialScriptName = "pservs/buy-initial.js";
+export const selfContainedHGWScriptName = "hacking/self-contained-hgw.js";
 export const weakenScriptName = "hacking/weaken.js";
 
 export function copyHGWFilesToServer(ns: NS, hostname: string) {

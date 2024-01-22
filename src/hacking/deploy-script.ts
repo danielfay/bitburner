@@ -1,5 +1,6 @@
 import { NS } from "@ns";
 import { nukeServer } from "lib/access";
+import { selfContainedHGWScriptName } from "lib/deploy";
 import { getThreadsForScript } from "lib/memory";
 import {
   findAllHostnames,
@@ -10,10 +11,10 @@ import { findHackingTarget } from "lib/target";
 
 export async function main(ns: NS): Promise<void> {
   const serverType = (ns.args[0] as string) ?? "all";
-  const script = (ns.args[1] as string) ?? "hacking/self-contained-hgw.js";
+  const script = (ns.args[1] as string) ?? selfContainedHGWScriptName;
 
   let target = ns.args[2] as string;
-  if (script === "hacking/self-contained-hgw.js") {
+  if (script === selfContainedHGWScriptName) {
     target = target ?? findHackingTarget(ns);
   }
 
@@ -58,7 +59,7 @@ async function deployScript(
 
   if (target) {
     ns.exec(script, hostname, threads, target);
-    await ns.sleep(2000);
+    await ns.sleep(1000);
   } else {
     ns.exec(script, hostname, threads);
   }

@@ -1,5 +1,5 @@
 import { NS } from "@ns";
-import { solveTotalWaysToSumII } from "lib/codeContracts";
+import { solveTotalWaysToSumII } from "lib/codeContract";
 
 export async function main(ns: NS): Promise<void> {
   const contractType = ns.args[0] as string;

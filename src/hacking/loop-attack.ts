@@ -1,12 +1,12 @@
 import { NS } from "@ns";
-import { findHackingTarget } from "lib/target";
-import { findNukedHostnames } from "lib/networking";
 import {
   deployHGWtoServer,
   growScriptName,
   hackScriptName,
   weakenScriptName,
 } from "lib/deploy";
+import { findNukedHostnames } from "lib/networking";
+import { findHackingTarget } from "lib/target";
 
 export async function main(ns: NS): Promise<void> {
   let target = (ns.args[0] as string) ?? findHackingTarget(ns);

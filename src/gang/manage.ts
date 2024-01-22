@@ -12,6 +12,12 @@ export async function main(ns: NS): Promise<void> {
   const forProfit = Boolean(ns.args[1]);
   const ignoreBonusTime = Boolean(ns.args[2]);
 
+  ns.print("--- Called with args");
+  ns.print(`Priority: ${priority}`);
+  ns.print(`Save profits? ${forProfit}`);
+  ns.print(`Ignore Bonus Time? ${ignoreBonusTime}`);
+  ns.print("---");
+
   ns.disableLog("sleep");
   ns.disableLog("getServerMoneyAvailable");
   ns.disableLog("gang.setMemberTask");

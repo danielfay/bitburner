@@ -1,11 +1,12 @@
 import { NS } from "@ns";
-import { findHackingTarget } from "lib/target";
-import { findNukedHostnames } from "lib/networking";
 import {
   deployHGWtoServer,
   growScriptName,
+  loopAttackScriptName,
   weakenScriptName,
 } from "lib/deploy";
+import { findNukedHostnames } from "lib/networking";
+import { findHackingTarget } from "lib/target";
 
 export async function main(ns: NS): Promise<void> {
   let target = (ns.args[0] as string) ?? findHackingTarget(ns);
@@ -35,5 +36,5 @@ export async function main(ns: NS): Promise<void> {
     await ns.sleep(1000);
   }
 
-  ns.spawn("hacking/loop-attack.js", { threads: 1, spawnDelay: 1000 });
+  ns.spawn(loopAttackScriptName, { threads: 1, spawnDelay: 1000 });
 }

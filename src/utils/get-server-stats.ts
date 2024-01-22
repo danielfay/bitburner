@@ -2,6 +2,9 @@ import { NS } from "@ns";
 
 export async function main(ns: NS): Promise<void> {
   let target = ns.args[0] as string;
+
+  ns.tail();
+
   while (true) {
     let percentMoney =
       ns.getServerMoneyAvailable(target) / ns.getServerMaxMoney(target);
