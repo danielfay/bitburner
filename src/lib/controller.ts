@@ -30,7 +30,7 @@ function getBitNodeState(ns: NS) {
   let bitNodeState: BitNodeState;
   const totalHomeRAM = ns.getServerMaxRam("home");
 
-  if (totalHomeRAM < 1000) {
+  if (totalHomeRAM < 200) {
     bitNodeState = BitNodeState.early;
   } else {
     bitNodeState = BitNodeState.mid;
