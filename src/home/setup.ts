@@ -17,11 +17,6 @@ export async function main(ns: NS): Promise<void> {
   const bitNodeInformation = getBitNodeInformation(ns);
   const baseHomeReserveRam = 20;
 
-  let gangManagerRam = 0;
-  if (bitNodeInformation.hasGangAccess) {
-    gangManagerRam = ns.getScriptRam(gangManagerScriptName);
-  }
-
   if (killAllProcesses) {
     ns.killall("home");
   }
@@ -33,7 +28,7 @@ export async function main(ns: NS): Promise<void> {
       ns,
       selfContainedHGWScriptName,
       "home",
-      baseHomeReserveRam + gangManagerRam
+      baseHomeReserveRam
     );
     ns.spawn(
       selfContainedHGWScriptName,
@@ -44,6 +39,11 @@ export async function main(ns: NS): Promise<void> {
       target
     );
   } else if (bitNodeInformation.state === BitNodeState.mid) {
+    let gangManagerRam = 0;
+    if (bitNodeInformation.hasGangAccess) {
+      gangManagerRam = ns.getScriptRam(gangManagerScriptName);
+    }
+
     const hackThreads = 5;
     const totalThreads = getThreadsForScript(
       ns,
