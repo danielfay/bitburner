@@ -20,15 +20,7 @@ export async function completeStep(ns: NS, step: string) {
 
   ns.run(scriptName);
 
-  let stepRunning = true;
-  while (stepRunning) {
-    stepRunning = false;
-    const processes = ns.ps("home");
-    for (const process of processes) {
-      if (process.filename === scriptName) {
-        stepRunning = true;
-      }
-    }
+  while (ns.scriptRunning(scriptName, "home")) {
     await ns.sleep(1000);
   }
 }
@@ -52,7 +44,7 @@ function getBitNodeStage(ns: NS) {
   let bitNodeStage: BitNodeStage;
   const totalHomeRAM = ns.getServerMaxRam("home");
 
-  if (totalHomeRAM < 200) {
+  if (totalHomeRAM < 256) {
     bitNodeStage = BitNodeStage.beginning;
   } else {
     bitNodeStage = BitNodeStage.early;

@@ -16,9 +16,21 @@ export async function main(ns: NS): Promise<void> {
   const target = findHackingTarget(ns);
   const bitNodeInformation = getBitNodeInformation(ns);
   const baseHomeReserveRam = 20;
+  const responsibleScripts = [
+    gangManagerScriptName,
+    growScriptName,
+    hackScriptName,
+    pservsBuyInitialScriptName,
+    selfContainedHGWScriptName,
+    weakenScriptName,
+  ];
 
   if (killAllProcesses) {
     ns.killall("home");
+  } else {
+    for (const scriptName of responsibleScripts) {
+      ns.scriptKill(scriptName, "home");
+    }
   }
 
   ns.run(pservsBuyInitialScriptName);

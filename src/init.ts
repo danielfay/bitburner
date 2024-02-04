@@ -3,6 +3,7 @@ import {
   BitNodeStage,
   completeStep,
   getBitNodeInformation,
+  homeSetupScriptName,
 } from "lib/controller";
 
 export async function main(ns: NS): Promise<void> {
@@ -17,5 +18,7 @@ export async function main(ns: NS): Promise<void> {
     await completeStep(ns, "get-brutessh.js");
     await completeStep(ns, "backdoor-csec.js");
     await completeStep(ns, "join-cybersec.js");
+    await completeStep(ns, "buy-128gb-ram.js");
+    ns.run(homeSetupScriptName);
   }
 }
