@@ -1,16 +1,21 @@
 import { NS } from "@ns";
 import {
-  BitNodeState,
-  stateEarlyScriptName,
+  BitNodeStage,
+  completeStep,
   getBitNodeInformation,
 } from "lib/controller";
 
 export async function main(ns: NS): Promise<void> {
+  ns.disableLog("sleep");
+
   ns.killall("home");
 
   const bitNodeInformation = getBitNodeInformation(ns);
 
-  if ((bitNodeInformation.state = BitNodeState.early)) {
-    ns.spawn(stateEarlyScriptName, { threads: 1, spawnDelay: 500 });
+  if ((bitNodeInformation.stage = BitNodeStage.beginning)) {
+    await completeStep(ns, "initial-setup.js");
+    await completeStep(ns, "get-brutessh.js");
+    await completeStep(ns, "backdoor-csec.js");
+    await completeStep(ns, "join-cybersec.js");
   }
 }

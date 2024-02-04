@@ -1,18 +1,36 @@
 import { NS } from "@ns";
 
-export const stateEarlyScriptName = "state/early.js";
 export const homeSetupScriptName = "home/setup.js";
 export const hackingStartScriptName = "hacking/start.js";
 
 type BitNodeInformation = {
-  state: BitNodeState;
+  stage: BitNodeStage;
   hasGangAccess: Boolean;
 };
 
-export enum BitNodeState {
+export enum BitNodeStage {
+  beginning = "beginning",
   early = "early",
-  mid = "mid",
-  late = "late",
+}
+
+export async function completeStep(ns: NS, step: string) {
+  const bitNodeInformation = getBitNodeInformation(ns);
+  const stage = bitNodeInformation.stage;
+  const scriptName = `stages/${stage}/${step}`;
+
+  ns.run(scriptName);
+
+  let stepRunning = true;
+  while (stepRunning) {
+    stepRunning = false;
+    const processes = ns.ps("home");
+    for (const process of processes) {
+      if (process.filename === scriptName) {
+        stepRunning = true;
+      }
+    }
+    await ns.sleep(1000);
+  }
 }
 
 export function getBitNodeInformation(ns: NS) {
@@ -23,24 +41,24 @@ export function getBitNodeInformation(ns: NS) {
 
 function updateBitNodeInformation(ns: NS) {
   const bitNodeInformation: BitNodeInformation = {
-    state: getBitNodeState(ns),
+    stage: getBitNodeStage(ns),
     hasGangAccess: hasGangAccess(ns),
   };
 
   return bitNodeInformation;
 }
 
-function getBitNodeState(ns: NS) {
-  let bitNodeState: BitNodeState;
+function getBitNodeStage(ns: NS) {
+  let bitNodeStage: BitNodeStage;
   const totalHomeRAM = ns.getServerMaxRam("home");
 
   if (totalHomeRAM < 200) {
-    bitNodeState = BitNodeState.early;
+    bitNodeStage = BitNodeStage.beginning;
   } else {
-    bitNodeState = BitNodeState.mid;
+    bitNodeStage = BitNodeStage.early;
   }
 
-  return bitNodeState;
+  return bitNodeStage;
 }
 
 function hasGangAccess(ns: NS) {

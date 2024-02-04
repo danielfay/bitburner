@@ -1,5 +1,5 @@
 import { NS } from "@ns";
-import { BitNodeState, getBitNodeInformation } from "lib/controller";
+import { BitNodeStage, getBitNodeInformation } from "lib/controller";
 import {
   gangManagerScriptName,
   growScriptName,
@@ -23,7 +23,7 @@ export async function main(ns: NS): Promise<void> {
 
   ns.run(pservsBuyInitialScriptName);
 
-  if (bitNodeInformation.state === BitNodeState.early) {
+  if (bitNodeInformation.stage === BitNodeStage.beginning) {
     const hgwThreads = getThreadsForScript(
       ns,
       selfContainedHGWScriptName,
@@ -38,7 +38,7 @@ export async function main(ns: NS): Promise<void> {
       },
       target
     );
-  } else if (bitNodeInformation.state === BitNodeState.mid) {
+  } else if (bitNodeInformation.stage === BitNodeStage.early) {
     let gangManagerRam = 0;
     if (bitNodeInformation.hasGangAccess) {
       gangManagerRam = ns.getScriptRam(gangManagerScriptName);
