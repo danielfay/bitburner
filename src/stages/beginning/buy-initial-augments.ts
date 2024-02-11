@@ -1,5 +1,6 @@
 import { NS } from "@ns";
 import { getAugmentDetails } from "lib/augment";
+import { getCurrentFactionRep, getCurrentMoney } from "lib/stats";
 
 export async function main(ns: NS): Promise<void> {
   ns.disableLog("sleep");
@@ -10,13 +11,13 @@ export async function main(ns: NS): Promise<void> {
   const augments = getAugmentDetails(ns, augmentNames);
 
   for (const augment of augments) {
-    let currentMoney = ns.getServerMoneyAvailable("home");
-    let currentFactionRep = ns.singularity.getFactionRep(factionName);
-
     ns.print(
       `Waiting to have $${augment.price} and ${augment.repReq} rep for ${augment.name}...`
     );
-    while (currentMoney < augment.price || currentFactionRep < augment.repReq) {
+    while (
+      getCurrentMoney(ns) < augment.price ||
+      getCurrentFactionRep(ns, factionName) < augment.repReq
+    ) {
       await ns.sleep(10000);
     }
 

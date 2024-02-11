@@ -1,4 +1,5 @@
 import { GangMemberAscension, GangMemberInfo, NS } from "@ns";
+import { getCurrentMoney } from "lib/stats";
 
 type Equipment = {
   name: string;
@@ -101,10 +102,9 @@ export function quietMemberTaskAssign(ns: NS, member: string, task: string) {
 export function equipMembers(ns: NS) {
   const members = ns.gang.getMemberNames();
   const equipment = getPurchasableEquipment(ns);
-  const availableMoney = ns.getServerMoneyAvailable("home");
 
   for (const equip of equipment) {
-    if (availableMoney < equip.cost) {
+    if (getCurrentMoney(ns) < equip.cost) {
       break;
     }
     for (const member of members) {
@@ -122,12 +122,11 @@ export function equipMembers(ns: NS) {
 function getPurchasableEquipment(ns: NS) {
   let equipment: Equipment[] = [];
   const ignoredEquipmentTypes = ["Augmentation"];
-  const availableMoney = ns.getServerMoneyAvailable("home");
   const equipmentNames = ns.gang.getEquipmentNames();
 
   for (const equipmentName of equipmentNames) {
     const cost = ns.gang.getEquipmentCost(equipmentName);
-    if (cost < availableMoney) {
+    if (cost < getCurrentMoney(ns)) {
       const type = ns.gang.getEquipmentType(equipmentName);
       if (!ignoredEquipmentTypes.includes(type)) {
         equipment.push({ name: equipmentName, type, cost });

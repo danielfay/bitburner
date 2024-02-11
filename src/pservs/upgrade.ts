@@ -1,11 +1,12 @@
 import { NS } from "@ns";
+import { getCurrentMoney } from "lib/stats";
 
 export async function main(ns: NS): Promise<void> {
   const method = ns.args[0] as string;
   const ramExponent = ns.args[1] as number;
   const newRam = 2 ** ramExponent;
   const baseServerName = "pserv-";
-  let remainingMoney = ns.getServerMoneyAvailable("home");
+  let remainingMoney = getCurrentMoney(ns);
   let serverNum = 0;
   let upgradedServers = 0;
   let totalUpgradeCost = 0;

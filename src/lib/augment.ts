@@ -38,12 +38,3 @@ function isBuyableAugment(ns: NS, augmentName: string) {
 
   return true;
 }
-
-function canPurchaseAugment(ns: NS, factionName: string, augmentName: string) {
-  const augmentPrice = ns.singularity.getAugmentationPrice(augmentName);
-  const currentMoney = ns.getServerMoneyAvailable("home");
-  const augmentRepReq = ns.singularity.getAugmentationRepReq(augmentName);
-  const currentFactionRep = ns.singularity.getFactionRep(factionName);
-
-  return augmentPrice < currentMoney && augmentRepReq < currentFactionRep;
-}

@@ -1,4 +1,5 @@
 import { NS } from "@ns";
+import { getCurrentFactionRep } from "lib/stats";
 
 export async function main(ns: NS): Promise<void> {
   ns.disableLog("sleep");
@@ -9,7 +10,7 @@ export async function main(ns: NS): Promise<void> {
   let highestFactionRepName = "";
 
   for (const factionName of joinedFactions) {
-    const factionRep = ns.singularity.getFactionRep(factionName);
+    const factionRep = getCurrentFactionRep(ns, factionName);
     if (factionRep > highestFactionRep) {
       highestFactionRep = factionRep;
       highestFactionRepName = factionName;

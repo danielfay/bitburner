@@ -1,4 +1,5 @@
 import { NS } from "@ns";
+import { getCurrentHomeRam, getCurrentMoney } from "lib/stats";
 
 export async function main(ns: NS): Promise<void> {
   ns.disableLog("getServerMaxRam");
@@ -9,23 +10,16 @@ export async function main(ns: NS): Promise<void> {
 
   ns.print(`Upgrading RAM on home computer to ${requestedRam}GB...`);
 
-  let currentHomeRam = ns.getServerMaxRam("home");
-  while (currentHomeRam < requestedRam) {
+  while (getCurrentHomeRam(ns) < requestedRam) {
     const ramUpgradeCost = ns.singularity.getUpgradeHomeRamCost();
-    let currentMoney = ns.getServerMoneyAvailable("home");
 
     ns.print(
-      `Waiting to have $${ns.formatNumber(
-        ramUpgradeCost
-      )} to buy upgrade from ${currentHomeRam}GB RAM...`
+      `Waiting to have $${ns.formatNumber(ramUpgradeCost)} to buy RAM...`
     );
-    while (currentMoney < ramUpgradeCost) {
+    while (getCurrentMoney(ns) < ramUpgradeCost) {
       await ns.sleep(1000);
-
-      currentMoney = ns.getServerMoneyAvailable("home");
     }
 
     ns.singularity.upgradeHomeRam();
-    currentHomeRam = ns.getServerMaxRam("home");
   }
 }

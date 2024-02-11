@@ -1,4 +1,5 @@
 import { NS } from "@ns";
+import { getCurrentHomeRam } from "lib/stats";
 
 export const homeSetupScriptName = "home/setup.js";
 export const hackingStartScriptName = "hacking/start.js";
@@ -44,9 +45,9 @@ function updateBitNodeInformation(ns: NS) {
 
 function getBitNodeStage(ns: NS) {
   let bitNodeStage: BitNodeStage;
-  const totalHomeRAM = ns.getServerMaxRam("home");
+  const currentHomeRam = getCurrentHomeRam(ns);
 
-  if (totalHomeRAM < 256) {
+  if (currentHomeRam < 256) {
     bitNodeStage = BitNodeStage.beginning;
   } else {
     bitNodeStage = BitNodeStage.early;
