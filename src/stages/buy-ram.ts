@@ -5,15 +5,19 @@ export async function main(ns: NS): Promise<void> {
   ns.disableLog("sleep");
   ns.tail();
 
-  ns.print("Upgrading RAM on home computer to 128GB...");
+  const requestedRam = ns.args[0] as number;
+
+  ns.print(`Upgrading RAM on home computer to ${requestedRam}GB...`);
 
   let currentHomeRam = ns.getServerMaxRam("home");
-  while (currentHomeRam < 128) {
+  while (currentHomeRam < requestedRam) {
     const ramUpgradeCost = ns.singularity.getUpgradeHomeRamCost();
     let currentMoney = ns.getPlayer().money;
 
     ns.print(
-      `Waiting to have $${ns.formatNumber(ramUpgradeCost)} to buy RAM...`
+      `Waiting to have $${ns.formatNumber(
+        ramUpgradeCost
+      )} to buy upgrade from ${currentHomeRam}GB RAM...`
     );
     while (currentMoney < ramUpgradeCost) {
       await ns.sleep(1000);
