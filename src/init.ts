@@ -20,5 +20,9 @@ export async function main(ns: NS): Promise<void> {
     await completeStep(ns, `${BitNodeStage.beginning}/join-cybersec.js`);
     await completeStep(ns, "buy-ram.js", 128);
     ns.run(homeSetupScriptName);
+    await completeStep(ns, `${BitNodeStage.beginning}/buy-initial-augments.js`);
+    await completeStep(ns, "buy-ram.js", 256);
+    ns.run(homeSetupScriptName);
+    await completeStep(ns, "buy-nfg-and-install.js");
   }
 }

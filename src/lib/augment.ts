@@ -20,13 +20,30 @@ export function getAugmentDetails(ns: NS, augmentNames: string[]) {
     }
   }
 
-  return augmentDetails.sort((a, b) => a.price - b.price);
+  return augmentDetails.sort((a, b) => b.price - a.price);
 }
 
 function isBuyableAugment(ns: NS, augmentName: string) {
-  const ownedAugments = ns.singularity.getOwnedAugmentations(true);
+  const ownedAugments = ns.singularity.getOwnedAugmentations();
+  const ownedAndPurchasedAugments = ns.singularity.getOwnedAugmentations(true);
+  const augmentPrereq = ns.singularity.getAugmentationPrereq(augmentName);
 
-  if (ownedAugments.includes(augmentName)) return false;
+  if (augmentName === "NeuroFlux Governor") return false;
+
+  if (ownedAndPurchasedAugments.includes(augmentName)) return false;
+
+  for (const prereq of augmentPrereq) {
+    if (!ownedAugments.includes(prereq)) return false;
+  }
 
   return true;
+}
+
+function canPurchaseAugment(ns: NS, factionName: string, augmentName: string) {
+  const augmentPrice = ns.singularity.getAugmentationPrice(augmentName);
+  const currentMoney = ns.getServerMoneyAvailable("home");
+  const augmentRepReq = ns.singularity.getAugmentationRepReq(augmentName);
+  const currentFactionRep = ns.singularity.getFactionRep(factionName);
+
+  return augmentPrice < currentMoney && augmentRepReq < currentFactionRep;
 }
