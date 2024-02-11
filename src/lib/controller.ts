@@ -13,12 +13,14 @@ export enum BitNodeStage {
   early = "early",
 }
 
-export async function completeStep(ns: NS, step: string) {
-  const bitNodeInformation = getBitNodeInformation(ns);
-  const stage = bitNodeInformation.stage;
-  const scriptName = `stages/${stage}/${step}`;
+export async function completeStep(
+  ns: NS,
+  step: string,
+  ...stepArgs: (string | number | boolean)[]
+) {
+  const scriptName = `stages/${step}`;
 
-  ns.run(scriptName);
+  ns.run(scriptName, { threads: 1 }, ...stepArgs);
 
   while (ns.scriptRunning(scriptName, "home")) {
     await ns.sleep(1000);

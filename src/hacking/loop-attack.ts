@@ -9,16 +9,16 @@ import { findNukedHostnames } from "lib/networking";
 import { findHackingTarget } from "lib/target";
 
 export async function main(ns: NS): Promise<void> {
-  let target = (ns.args[0] as string) ?? findHackingTarget(ns);
-  let hostnames = findNukedHostnames(ns);
+  const target = (ns.args[0] as string) ?? findHackingTarget(ns);
+  const hostnames = findNukedHostnames(ns);
 
-  let hackThreads = 1;
-  let hackGroupRam = ns.getScriptRam(hackScriptName) * hackThreads;
-  let growThreads = 50;
-  let growGroupRam = ns.getScriptRam(growScriptName) * growThreads;
-  let weakenThreads = 10;
-  let weakenGroupRam = ns.getScriptRam(weakenScriptName) * weakenThreads;
-  let HGWGroupRam = hackGroupRam + growGroupRam + weakenGroupRam;
+  const hackThreads = 1;
+  const hackGroupRam = ns.getScriptRam(hackScriptName) * hackThreads;
+  const growThreads = 50;
+  const growGroupRam = ns.getScriptRam(growScriptName) * growThreads;
+  const weakenThreads = 10;
+  const weakenGroupRam = ns.getScriptRam(weakenScriptName) * weakenThreads;
+  const HGWGroupRam = hackGroupRam + growGroupRam + weakenGroupRam;
 
   let totalDeployedHackThreads = 0;
   for (const hostname of hostnames) {
