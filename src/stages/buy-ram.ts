@@ -1,4 +1,4 @@
-import { FactionWorkType, NS } from "@ns";
+import { NS } from "@ns";
 
 export async function main(ns: NS): Promise<void> {
   ns.disableLog("getServerMaxRam");
@@ -12,7 +12,7 @@ export async function main(ns: NS): Promise<void> {
   let currentHomeRam = ns.getServerMaxRam("home");
   while (currentHomeRam < requestedRam) {
     const ramUpgradeCost = ns.singularity.getUpgradeHomeRamCost();
-    let currentMoney = ns.getPlayer().money;
+    let currentMoney = ns.getServerMoneyAvailable("home");
 
     ns.print(
       `Waiting to have $${ns.formatNumber(
@@ -22,7 +22,7 @@ export async function main(ns: NS): Promise<void> {
     while (currentMoney < ramUpgradeCost) {
       await ns.sleep(1000);
 
-      currentMoney = ns.getPlayer().money;
+      currentMoney = ns.getServerMoneyAvailable("home");
     }
 
     ns.singularity.upgradeHomeRam();

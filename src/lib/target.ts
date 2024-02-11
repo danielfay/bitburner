@@ -1,7 +1,7 @@
 import { NS } from "@ns";
 
 export function findHackingTarget(ns: NS) {
-  const hackingSkill = ns.getPlayer().skills.hacking;
+  const hackingSkill = ns.getHackingLevel();
   let target = "n00dles";
 
   if (hackingSkill > 1000) {
