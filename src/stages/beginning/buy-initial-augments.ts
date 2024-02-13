@@ -1,5 +1,5 @@
 import { NS } from "@ns";
-import { getAugmentDetails } from "lib/augment";
+import { getPurchasableAugmentDetails } from "lib/augment";
 import { getCurrentFactionRep, getCurrentMoney } from "lib/stats";
 
 export async function main(ns: NS): Promise<void> {
@@ -8,7 +8,7 @@ export async function main(ns: NS): Promise<void> {
 
   const factionName = "CyberSec";
   const augmentNames = ns.singularity.getAugmentationsFromFaction(factionName);
-  const augments = getAugmentDetails(ns, augmentNames);
+  const augments = getPurchasableAugmentDetails(ns, augmentNames);
 
   for (const augment of augments) {
     ns.print(

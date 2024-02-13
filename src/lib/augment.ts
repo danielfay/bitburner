@@ -1,26 +1,39 @@
 import { NS } from "@ns";
 
-type AugmentDetails = {
+type AugmentDetail = {
   name: string;
   price: number;
   repReq: number;
 };
 
 export function getAugmentDetails(ns: NS, augmentNames: string[]) {
-  let augmentDetails: AugmentDetails[] = [];
+  let augmentDetails: AugmentDetail[] = [];
+
+  for (const augmentName of augmentNames) {
+    augmentDetails.push(createAugmentDetailFromName(ns, augmentName));
+  }
+
+  return augmentDetails.sort((a, b) => b.price - a.price);
+}
+
+export function getPurchasableAugmentDetails(ns: NS, augmentNames: string[]) {
+  let augmentDetails: AugmentDetail[] = [];
 
   for (const augmentName of augmentNames) {
     if (isBuyableAugment(ns, augmentName)) {
-      const augment = {
-        name: augmentName,
-        price: ns.singularity.getAugmentationPrice(augmentName),
-        repReq: ns.singularity.getAugmentationRepReq(augmentName),
-      };
-      augmentDetails.push(augment);
+      augmentDetails.push(createAugmentDetailFromName(ns, augmentName));
     }
   }
 
   return augmentDetails.sort((a, b) => b.price - a.price);
+}
+
+function createAugmentDetailFromName(ns: NS, augmentName: string) {
+  return {
+    name: augmentName,
+    price: ns.singularity.getAugmentationPrice(augmentName),
+    repReq: ns.singularity.getAugmentationRepReq(augmentName),
+  };
 }
 
 function isBuyableAugment(ns: NS, augmentName: string) {
