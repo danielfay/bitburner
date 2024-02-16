@@ -15,7 +15,10 @@ export async function main(ns: NS): Promise<void> {
   const killAllProcesses = Boolean(ns.args[0]);
   const target = findHackingTarget(ns);
   const bitNodeInformation = getBitNodeInformation(ns);
-  const baseHomeReserveRam = 20;
+  let baseHomeReserveRam = 20;
+  if (ns.getServerMaxRam("home") >= 128) {
+    baseHomeReserveRam = 50;
+  }
   const responsibleScripts = [
     gangManagerScriptName,
     growScriptName,
@@ -26,7 +29,7 @@ export async function main(ns: NS): Promise<void> {
   ];
 
   if (killAllProcesses) {
-    ns.killall("home");
+    ns.killall("home", true);
   } else {
     for (const scriptName of responsibleScripts) {
       ns.scriptKill(scriptName, "home");

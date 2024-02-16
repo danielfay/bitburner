@@ -27,5 +27,7 @@ export async function main(ns: NS): Promise<void> {
     );
   }
 
+  ns.killall("home", true);
+  await ns.sleep(1000);
   ns.singularity.installAugmentations("init.js");
 }
